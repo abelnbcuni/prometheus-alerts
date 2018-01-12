@@ -1,10 +1,11 @@
 # Prometheus Alerts
 
-This Repository will be the version control for the different custom alerts and the configurations files required to make it the alerts work.
+This Repository will be the version control for the different custom alerts and the configurations files required to make the alerts work.
 
 ## Custom Alert Requirements
 
-To create intelligent alerts that will be triggered when failing thresholds are reached and that will provide complete and pertinent information. It will also be useful to see the origination of the error. That will need to be the foundation. There is a label that might be useful. I believe it is availabilty zones.
+* To create intelligent alerts that will be triggered when failing thresholds are reached and that will provide complete and pertinent information.
+* It is neccessary to see the origination of the error (foundation, component, job, etc).
 
 ## Creating Custom Alerts
 
