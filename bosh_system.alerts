@@ -11,6 +11,42 @@ groups:
       severity: critical
     annotations:
       description: BOSH System VM `{{$labels.environment}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_index}}/{{$labels.bosh_job_ip}}`
-        has been down for more than 15 mins
+        has been down for more than 10 mins
       summary: BOSH System VM `{{$labels.environment}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_index}}/{{$labels.bosh_job_ip}}`
-        has been down for more than 15 mins
+        has been down for more than 10 mins
+  
+  ALERT BOSH_Job_Process_Down
+  IF max(bosh_job_process_healthy{bosh_job_name!~"^compilation.*",bosh_deployment!="bosh-health-check"}) by(environment, bosh_name, bosh_deployment, bosh_job_name, bosh_job_index, bosh_job_process_name) < 1
+  FOR 10m
+  LABELS {
+    service = "bosh-job-process",
+    severity = "warning",
+  }
+  ANNOTATIONS {
+    summary = "BOSH Job Process `{{$labels.environment}}/{{$labels.bosh_name}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_index}}/{{$labels.bosh_job_process_name}}/{{$labels.bosh_job_ip}}` has been down for more than 10 mins",
+    description = "BOSH Job Process `{{$labels.environment}}/{{$labels.bosh_name}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_index}}/{{$labels.bosh_job_process_name}}/{{$labels.bosh_job_ip}}` has been down for more than 10 mins",
+  }
+  
+  ALERT BOSH_Job_System_Disk_Low
+  IF avg(bosh_job_system_disk_percent{bosh_job_name!~"^compilation.*",bosh_deployment!="bosh-health-check"}) by(environment, bosh_name, bosh_deployment, bosh_job_name, bosh_job_index) > 40
+  FOR 10m
+  LABELS {
+    service = "bosh-job",
+    severity = "warning",
+  }
+  ANNOTATIONS {
+    summary = "BOSH Job `{{$labels.environment}}/{{$labels.bosh_name}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_index}}/{{$labels.bosh_job_ip}}` is running out of system disk",
+    description = "BOSH Job `{{$labels.environment}}/{{$labels.bosh_name}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_index}}/{{$labels.bosh_job_ip}}` has used more than 75% of its system disk for 10 mins %>: {{$value}}%",
+  }
+
+  ALERT BOSH_Job_System_Disk_Full
+  IF avg(bosh_job_system_disk_percent{bosh_job_name!~"^compilation.*",bosh_deployment!="bosh-health-check"}) by(environment, bosh_name, bosh_deployment, bosh_job_name, bosh_job_index) > 90
+  FOR 10m
+  LABELS {
+    service = "bosh-job",
+    severity = "critical",
+  }
+  ANNOTATIONS {
+    summary = "BOSH Job `{{$labels.environment}}/{{$labels.bosh_name}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_index}}/{{$labels.bosh_job_ip}}` is running out of system disk",
+    description = "BOSH Job `{{$labels.environment}}/{{$labels.bosh_name}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_index}}/{{$labels.bosh_job_ip}}` has used more than 90% of its system disk for 10 mins %>: {{$value}}%",
+  }
