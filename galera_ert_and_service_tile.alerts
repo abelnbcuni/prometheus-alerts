@@ -1,0 +1,39 @@
+groups:
+- name: galera_ert_and_service_tile.alerts
+  rules:
+  - alert: P_MySQL_Galera_Not_Operational
+    expr: min(firehose_value_metric_p_mysql_p_mysql_galera_wsrep_cluster_status) by(environment, bosh_deployment, bosh_job_name, bosh_job_ip) != 1
+    for: 15m
+    labels:
+      service: p-mysql
+      severity: critical
+    annotations:
+      description: "A p-mysql Galera Cluster node on `{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` had not been operational during the last 15 mins. It may occur in cases of multiple membership changes that result in a loss of quorum or in cases of split-brain situations"
+      summary: "p-mysql Galera Cluster node on `{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` not operational"
+  - alert: P_MySQL_Galera_Not_Ready
+    expr: min(firehose_value_metric_p_mysql_p_mysql_galera_wsrep_ready) by(environment, bosh_deployment, bosh_job_name, bosh_job_ip) != 1
+    for: 15m
+    labels:
+      service: p-mysql
+      severity: critical
+    annotations:
+      description: "A Galera cluster node on `{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` has not been ready during the last 15 mins"
+      summary: "Galera cluster node on `{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` not ready"
+  - alert: MySQL_Galera_Not_Operational
+    expr: min(firehose_value_metric_mysql_mysql_galera_wsrep_cluster_status) by(environment, bosh_deployment, bosh_job_name, bosh_job_ip) != 1
+    for: 15m
+    labels:
+      service: mysql
+      severity: critical
+    annotations:
+      description: "An ERT Galera Cluster node on `{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` had not been operational during the last 15 mins. It may occur in cases of multiple membership changes that result in a loss of quorum or in cases of split-brain situations"
+      summary: "ERT Galera Cluster node on `{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` not operational"
+  - alert: MySQL_Galera_Not_Ready
+    expr: min(firehose_value_metric_mysql_mysql_galera_wsrep_ready) by(environment, bosh_deployment, bosh_job_name, bosh_job_ip) != 1
+    for: 15m
+    labels:
+      service: mysql
+      severity: critical
+    annotations:
+      description: "An ERT Galera cluster node on `{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` has not been ready during the last 15 mins"
+      summary: "ERT Galera cluster node on `{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` not ready"

@@ -50,10 +50,3 @@ groups:
         {{$labels.bosh_job_index}}/{{$labels.bosh_job_ip}}` has used more than 90% of its system disk for 10 mins {{$value}}%"
       summary: BOSH Job `{{$labels.environment}}/{{$labels.bosh_name}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/
         {{$labels.bosh_job_index}}/{{$labels.bosh_job_ip}}` is running out of system disk
-
-
-
-
-
-
-
