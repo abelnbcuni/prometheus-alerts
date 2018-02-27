@@ -1,0 +1,133 @@
+groups:
+- name: devush_bosh_system.alerts
+  rules:
+  - alert: Devush_BOSH_System_VM_Down
+    expr: max(devush_bosh_job_healthy{bosh_deployment!="bosh-health-check",bosh_job_name!~"^compilation.*"})
+      BY (environment, bosh_name, bosh_deployment, bosh_job_name, bosh_job_index,
+      bosh_job_ip) < 1
+    for: 10m
+    labels:
+      service: bosh-job-vm
+      severity: critical
+    annotations:
+      description: BOSH System VM `{{$labels.environment}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_index}}/{{$labels.bosh_job_ip}}`
+        has been down for more than 10 mins
+      summary: BOSH System VM `{{$labels.environment}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_index}}/{{$labels.bosh_job_ip}}`
+        has been down for more than 10 mins
+  - alert: Devush_BOSH_Job_Process_Down
+    expr: max(devush_bosh_job_process_healthy{bosh_job_name!~"^compilation.*",bosh_deployment!="bosh-health-check"}) 
+      BY (environment, bosh_name, bosh_deployment, bosh_job_name, bosh_job_index, bosh_job_process_name) < 1
+    for: 10m
+    labels:
+      service: bosh-job-process
+      severity: warning
+    annotations:
+      description: BOSH Job Process `{{$labels.environment}}/{{$labels.bosh_name}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_index}}/
+        {{$labels.bosh_job_process_name}}/{{$labels.bosh_job_ip}}` has been down for more than 10 mins
+      summary: BOSH Job Process `{{$labels.environment}}/{{$labels.bosh_name}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_index}}/
+        {{$labels.bosh_job_process_name}}/{{$labels.bosh_job_ip}}` has been down for more than 10 mins
+  - alert: Devush_BOSH_Job_System_Disk_Low
+    expr: avg(devush_bosh_job_system_disk_percent{bosh_job_name!~"^compilation.*",bosh_deployment!="bosh-health-check"}) 
+      BY (environment, bosh_name, bosh_deployment, bosh_job_name, bosh_job_index) > 85
+    for: 10m
+    labels:
+      service: bosh-job
+      severity: warning
+    annotations:
+      description: BOSH Job `{{$labels.environment}}/{{$labels.bosh_name}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/
+        {{$labels.bosh_job_index}}/{{$labels.bosh_job_ip}}` has used more than 75% of its system disk for 10 mins {{$value}}%
+      summary: "BOSH Job `{{$labels.environment}}/{{$labels.bosh_name}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/
+        {{$labels.bosh_job_index}}/{{$labels.bosh_job_ip}}` is running out of system disk"
+  - alert: Devush_BOSH_Job_System_Disk_Full
+    expr: avg(devush_bosh_job_system_disk_percent{bosh_job_name!~"^compilation.*",bosh_deployment!="bosh-health-check"}) 
+      BY (environment, bosh_name, bosh_deployment, bosh_job_name, bosh_job_index) > 90
+    for: 10m
+    labels: 
+      service: bosh-job
+      severity: critical
+    annotations:
+      description: "BOSH Job `{{$labels.environment}}/{{$labels.bosh_name}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/
+        {{$labels.bosh_job_index}}/{{$labels.bosh_job_ip}}` has used more than 90% of its system disk for 10 mins {{$value}}%"
+      summary: BOSH Job `{{$labels.environment}}/{{$labels.bosh_name}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/
+        {{$labels.bosh_job_index}}/{{$labels.bosh_job_ip}}` is running out of system disk
+  - alert: Devush_BOSH_Job_Ephemeral_Disk_Low
+    expr: avg(devush_bosh_job_ephemeral_disk_percent{bosh_job_name!~"^compilation.*",bosh_deployment!="bosh-health-check"}) 
+      BY (environment, bosh_name, bosh_deployment, bosh_job_name, bosh_job_index) > 85
+    for: 10m
+    labels:
+      service: bosh-job
+      severity: warning
+    annotations:
+      description: BOSH Job `{{$labels.environment}}/{{$labels.bosh_name}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/
+        {{$labels.bosh_job_index}}/{{$labels.bosh_job_ip}}` has used more than 75% of its ephemeral disk for 10 mins {{$value}}%
+      summary: "BOSH Job `{{$labels.environment}}/{{$labels.bosh_name}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/
+        {{$labels.bosh_job_index}}/{{$labels.bosh_job_ip}}` is running out of ephemeral disk"
+  - alert: Devush_BOSH_Job_Ephemeral_Disk_Full
+    expr: avg(devush_bosh_job_ephemeral_disk_percent{bosh_job_name!~"^compilation.*",bosh_deployment!="bosh-health-check"}) 
+      BY (environment, bosh_name, bosh_deployment, bosh_job_name, bosh_job_index) > 90
+    for: 10m
+    labels: 
+      service: bosh-job
+      severity: critical
+    annotations:
+      description: "BOSH Job `{{$labels.environment}}/{{$labels.bosh_name}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/
+        {{$labels.bosh_job_index}}/{{$labels.bosh_job_ip}}` has used more than 90% of its ephemeral disk for 10 mins {{$value}}%"
+      summary: BOSH Job `{{$labels.environment}}/{{$labels.bosh_name}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/
+        {{$labels.bosh_job_index}}/{{$labels.bosh_job_ip}}` is running out of ephemeral disk
+  - alert: Devush_BOSH_Job_Persistent_Disk_Low
+    expr: avg(devush_bosh_job_persistent_disk_percent{bosh_job_name!~"^compilation.*",bosh_deployment!="bosh-health-check"}) 
+      BY (environment, bosh_name, bosh_deployment, bosh_job_name, bosh_job_index) > 85
+    for: 10m
+    labels:
+      service: bosh-job
+      severity: warning
+    annotations:
+      description: BOSH Job `{{$labels.environment}}/{{$labels.bosh_name}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/
+        {{$labels.bosh_job_index}}/{{$labels.bosh_job_ip}}` has used more than 75% of its persistent disk for 10 mins {{$value}}%
+      summary: "BOSH Job `{{$labels.environment}}/{{$labels.bosh_name}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/
+        {{$labels.bosh_job_index}}/{{$labels.bosh_job_ip}}` is running out of persistent disk"
+  - alert: Devush_BOSH_Job_Persistent_Disk_Full
+    expr: avg(devush_bosh_job_persistent_disk_percent{bosh_job_name!~"^compilation.*",bosh_deployment!="bosh-health-check"}) 
+      BY (environment, bosh_name, bosh_deployment, bosh_job_name, bosh_job_index) > 90
+    for: 10m
+    labels: 
+      service: bosh-job
+      severity: critical
+    annotations:
+      description: "BOSH Job `{{$labels.environment}}/{{$labels.bosh_name}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/
+        {{$labels.bosh_job_index}}/{{$labels.bosh_job_ip}}` has used more than 90% of its persistent disk for 10 mins {{$value}}%"
+      summary: BOSH Job `{{$labels.environment}}/{{$labels.bosh_name}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/
+        {{$labels.bosh_job_index}}/{{$labels.bosh_job_ip}}` is running out of persistent disk
+  - alert: Devush_BOSH_Job_Memory_Low
+    expr: avg(devush_bosh_job_mem_percent{bosh_job_name!~"^compilation.*",bosh_deployment!="bosh-health-check"}) 
+      BY (environment, bosh_name, bosh_deployment, bosh_job_name, bosh_job_index) > 85
+    for: 10m
+    labels:
+      service: bosh-job
+      severity: warning
+    annotations:
+      description: BOSH Job `{{$labels.environment}}/{{$labels.bosh_name}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/
+        {{$labels.bosh_job_index}}/{{$labels.bosh_job_ip}}` has used more than 75% of its memory for 10 mins {{$value}}%
+      summary: "BOSH Job `{{$labels.environment}}/{{$labels.bosh_name}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/
+        {{$labels.bosh_job_index}}/{{$labels.bosh_job_ip}}` is running out of memory"
+  - alert: Devush_BOSH_Job_Memory_Full
+    expr: avg(devush_bosh_job_mem_percent{bosh_job_name!~"^compilation.*",bosh_deployment!="bosh-health-check"}) 
+      BY (environment, bosh_name, bosh_deployment, bosh_job_name, bosh_job_index) > 90
+    for: 10m
+    labels: 
+      service: bosh-job
+      severity: critical
+    annotations:
+      description: "BOSH Job `{{$labels.environment}}/{{$labels.bosh_name}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/
+        {{$labels.bosh_job_index}}/{{$labels.bosh_job_ip}}` has used more than 90% of its memory for 10 mins {{$value}}%"
+      summary: BOSH Job `{{$labels.environment}}/{{$labels.bosh_name}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/
+        {{$labels.bosh_job_index}}/{{$labels.bosh_job_ip}}` is running out of memory
+  - alert: Devush_BOSH_Exporter_Absent
+    expr: absent(devush_bosh_job_healthy) == 1
+    for: 10m
+    labels:
+      service: bosh-job
+      severity: critical
+    annotations:
+      description: "Missing Metrics From The BOSH Exporter For 10 mins - Bosh Exporter/Director May be Down"
+      summary: "Missing Metrics From The BOSH Exporter For 10 mins - Bosh Exporte/Directorr May be Down"

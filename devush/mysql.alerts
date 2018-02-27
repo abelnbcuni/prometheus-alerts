@@ -1,0 +1,105 @@
+--- 
+groups: 
+  - 
+    name: devush_mysql.alerts
+    rules: 
+      - 
+        alert: Devush_P_MySQL_Galera_Not_Operational
+        annotations: 
+          description: "A p-mysql Galera Cluster node on `{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` had not been operational during the last 15 mins. It may occur in cases of multiple membership changes that result in a loss of quorum or in cases of split-brain situations"
+          summary: "p-mysql Galera Cluster node on `{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` not operational"
+        expr: "min(devush_firehose_value_metric_p_mysql_p_mysql_galera_wsrep_cluster_status) by(environment, bosh_deployment, bosh_job_name, bosh_job_ip) != 1"
+        for: 15m
+        labels: 
+          service: p-mysql
+          severity: critical
+      - 
+        alert: Devush_P_MySQL_Galera_Not_Ready
+        annotations: 
+          description: "A Galera cluster node on `{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` has not been ready during the last 15 mins"
+          summary: "Galera cluster node on `{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` not ready"
+        expr: "min(devush_firehose_value_metric_p_mysql_p_mysql_galera_wsrep_ready) by(environment, bosh_deployment, bosh_job_name, bosh_job_ip) != 1"
+        for: 15m
+        labels: 
+          service: p-mysql
+          severity: critical
+      - 
+        alert: Devush_MySQL_Galera_Not_Operational
+        annotations: 
+          description: "An ERT Galera Cluster node on `{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` had not been operational during the last 15 mins. It may occur in cases of multiple membership changes that result in a loss of quorum or in cases of split-brain situations"
+          summary: "ERT Galera Cluster node on `{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` not operational"
+        expr: "min(devush_firehose_value_metric_mysql_mysql_galera_wsrep_cluster_status) by(environment, bosh_deployment, bosh_job_name, bosh_job_ip) != 1"
+        for: 15m
+        labels: 
+          service: mysql
+          severity: critical
+      - 
+        alert: Devush_MySQL_Galera_Not_Ready
+        annotations: 
+          description: "An ERT Galera cluster node on `{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` has not been ready during the last 15 mins"
+          summary: "ERT Galera cluster node on `{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` not ready"
+        expr: "min(devush_firehose_value_metric_mysql_mysql_galera_wsrep_ready) by(environment, bosh_deployment, bosh_job_name, bosh_job_ip) != 1"
+        for: 15m
+        labels: 
+          service: mysql
+          severity: critical
+      - 
+        alert: Devush_P_MySQL_Availability
+        annotations: 
+          description: "A p-mysql server `{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` had not been operational during the last 15 mins."
+          summary: "A p-mysql server `{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` not operational"
+        expr: "avg(devush_firehose_value_metric_p_mysql_p_mysql_available) by (environment, bosh_deployment, bosh_job_name, bosh_job_ip) != 1"
+        for: 15m
+        labels: 
+          service: p-mysql
+          severity: critical
+      - 
+        alert: Devush_MySQL_Availability
+        annotations: 
+          description: "A mysql server `{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` had not been operational during the last 15 mins."
+          summary: "A mysql server `{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` not operational"
+        expr: "avg(devush_firehose_value_metric_mysql_mysql_available) by (environment, bosh_deployment, bosh_job_name, bosh_job_ip) != 1"
+        for: 15m
+        labels: 
+          service: mysql
+          severity: critical
+      - 
+        alert: Devush_P_MySQL_Galera_Cluster_Size
+        annotations: 
+          description: "A p-mysql Galera Cluster node on `{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` had not been communicating to other nodes during the last 15 mins."
+          summary: "p-mysql Galera Cluster node on `{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` not communicating to other nodes"
+        expr: "avg(devush_firehose_value_metric_p_mysql_p_mysql_galera_wsrep_cluster_size) by (environment, bosh_deployment, bosh_job_name, bosh_job_ip) < 3"
+        for: 15m
+        labels: 
+          service: p-mysql
+          severity: critical
+      - 
+        alert: Devush_MySQL_Galera_Cluster_Size
+        annotations: 
+          description: "ERT mysql Galera Cluster node on `{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` had not been communicating to other nodes during the last 15 mins."
+          summary: "ERT mysql Galera Cluster node on `{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` not communicating to other nodes"
+        expr: "avg(devush_firehose_value_metric_mysql_mysql_galera_wsrep_cluster_size) by (environment, bosh_deployment, bosh_job_name, bosh_job_ip) < 3"
+        for: 15m
+        labels: 
+          service: p-mysql
+          severity: critical
+      - 
+        alert: Devush_P_MySQL_Performance_Question
+        annotations: 
+          description: "A p-mysql server node on `{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` had not been processing any quesries during the last 15 mins."
+          summary: "A p-mysql server node on `{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` not processing any query."
+        expr: "devush_firehose_value_metric_p_mysql_p_mysql_performance_questions - devush_firehose_value_metric_p_mysql_p_mysql_performance_questions offset 1m == 0"
+        for: 15m
+        labels: 
+          service: p-mysql
+          severity: critical
+      - 
+        alert: Devush_MySQL_Performance_Question
+        annotations: 
+          description: "An ERT mysql server node on `{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` had not been processing any quesries during the last 15 mins."
+          summary: "An ERT mysql server node on `{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` not processing any query."
+        expr: "devush_firehose_value_metric_mysql_mysql_performance_questions - devush_firehose_value_metric_mysql_mysql_performance_questions offset 1m == 0"
+        for: 15m
+        labels: 
+          service: p-mysql
+          severity: critical

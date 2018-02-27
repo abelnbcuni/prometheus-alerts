@@ -1,0 +1,30 @@
+groups:
+- name: devush_p_rabbitmq.alerts
+  rules:
+  - alert: Devush_RabbitMQ_Server_Down
+    expr: min(devush_firehose_value_metric_p_rabbitmq_p_rabbitmq_rabbitmq_heartbeat) by(environment, bosh_deployment, bosh_job_name, bosh_job_ip) != 1
+    for: 15m
+    labels:
+      service: p-rabbitmq
+      severity: critical
+    annotations:
+      description: "The RabbitMQ Server instance at `{{$labels.environment}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` has been down for the last 15 mins"
+      summary: "Rabbitmq for PCF Server instance `{{$labels.environment}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` is down"
+  - alert: Devush_RabbitMQ_HAProxy_Down
+    expr: min(devush_firehose_value_metric_p_rabbitmq_p_rabbitmq_haproxy_heartbeat) by(environment, bosh_deployment, bosh_job_name, bosh_job_ip) != 1
+    for: 15m
+    labels:
+      service: p-rabbitmq
+      severity: critical
+    annotations:
+      description: "The RabbitMQ HAProxy instance at `{{$labels.environment}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` has been down for the last 15 mins"
+      summary: "Rabbitmq for PCF HAProxy instance `{{$labels.environment}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` is down"
+  - alert: Devush_RabbitMQ_Service_Broker_Down
+    expr: min(devush_firehose_value_metric_p_rabbitmq_p_rabbitmq_service_broker_heartbeat) by(environment, bosh_deployment, bosh_job_name, bosh_job_ip) != 1
+    for: 15m
+    labels:
+      service: p-rabbitmq
+      severity: critical
+    annotations:
+      description: "The RabbitMQ Service Broker instance at `{{$labels.environment}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` has been down for the last 15 mins"
+      summary: "Rabbitmq for PCF Service Broker instance `{{$labels.environment}}/{{$labels.bosh_deployment}}/{{$labels.bosh_job_name}}/{{$labels.bosh_job_ip}}` is down"
